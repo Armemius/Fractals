@@ -13,7 +13,7 @@ namespace fractal {
 		void setSize(double size);
 		void generate(int iters);
 	private:
-		double size_ = 102;
+		double size_ = 100;
 		std::vector<Square> squares_;
 
 		void generate_(int iters, double size, Pos pos);
