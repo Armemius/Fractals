@@ -8,5 +8,5 @@
 
 #include "Figures.h"
 #include "Complex.h"
-#include "SerpinskyCarpet.h"
+#include "SierpinskiCarpet.h"
 

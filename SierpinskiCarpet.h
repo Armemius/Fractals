@@ -2,11 +2,11 @@
 #include "stdafx.h"
 
 namespace fractal {
-	class SerpinskyCarpet {
+	class SierpinskiCarpet {
 	public:
-		SerpinskyCarpet();
-		SerpinskyCarpet(int size);
-		~SerpinskyCarpet();
+		SierpinskiCarpet();
+		SierpinskiCarpet(int size);
+		~SierpinskiCarpet();
 
 		double size();
 		const std::vector<Square>& squares();
@@ -19,33 +19,33 @@ namespace fractal {
 		void generate_(int iters, double size, Pos pos);
 	};
 	// Constructors & destructors
-	SerpinskyCarpet::SerpinskyCarpet() = default;
+	SierpinskiCarpet::SierpinskiCarpet() = default;
 
-	SerpinskyCarpet::SerpinskyCarpet(int size) : 
+	SierpinskiCarpet::SierpinskiCarpet(int size) : 
 		size_(size) {}
 
-	SerpinskyCarpet::~SerpinskyCarpet() {}
+	SierpinskiCarpet::~SierpinskiCarpet() {}
 
 	// Functions
-	double SerpinskyCarpet::size() {
+	double SierpinskiCarpet::size() {
 		return this->size_;
 	}
 
-	const std::vector<Square>& SerpinskyCarpet::squares() {
+	const std::vector<Square>& SierpinskiCarpet::squares() {
 		return this->squares_;
 	}
 
-	void SerpinskyCarpet::setSize(double size) {
+	void SierpinskiCarpet::setSize(double size) {
 		this->size_ = size;
 		return;
 	}
 
-	void SerpinskyCarpet::generate(int iters) {
+	void SierpinskiCarpet::generate(int iters) {
 		this->generate_(iters, this->size_, Pos(0, 0));
 		return;
 	}
 
-	void SerpinskyCarpet::generate_(int iters, double size, Pos pos) {
+	void SierpinskiCarpet::generate_(int iters, double size, Pos pos) {
 		if (iters < 0)
 			throw std::exception("Iteration count must be zero or greater");
 		if (iters == 0)
