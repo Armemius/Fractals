@@ -38,7 +38,7 @@ namespace fractal {
 	// Getters & setters
 	const std::vector<Line>& KochCurve::lines() {
 		return this->lines_;
-					}
+	}
 
 	// Functions
 	void KochCurve::generate(int iters) {
