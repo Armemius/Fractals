@@ -2,16 +2,17 @@
 #include "stdafx.h"
 
 namespace fractal {
-	class SierpinskiCarpet {
+	class SierpinskiCarpet : public IGeometricFractal {
 	public:
 		SierpinskiCarpet();
 		SierpinskiCarpet(int size);
 		~SierpinskiCarpet();
 
 		double size();
-		const std::vector<Square>& squares();
 		void setSize(double size);
-		void generate(int iters);
+		void generate(int iters) override;
+		const std::vector<Line>* lines() override;
+		const std::vector<Square>* squares() override;
 	private:
 		double size_ = 100;
 		std::vector<Square> squares_;
@@ -31,8 +32,12 @@ namespace fractal {
 		return this->size_;
 	}
 
-	const std::vector<Square>& SierpinskiCarpet::squares() {
-		return this->squares_;
+	const std::vector<Line>* SierpinskiCarpet::lines() {
+		return NULL;
+	}
+
+	const std::vector<Square>* SierpinskiCarpet::squares() {
+		return &this->squares_;
 	}
 
 	void SierpinskiCarpet::setSize(double size) {
@@ -41,6 +46,7 @@ namespace fractal {
 	}
 
 	void SierpinskiCarpet::generate(int iters) {
+		this->squares_ = std::vector<Square>();
 		this->generate_(iters, this->size_, Pos(0, 0));
 		return;
 	}

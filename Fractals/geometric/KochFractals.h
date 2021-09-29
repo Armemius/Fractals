@@ -2,16 +2,19 @@
 #include "stdafx.h"
 
 namespace fractal {
-	class KochCurve {
+	class KochCurve : public IGeometricFractal {
 	public:
 		KochCurve();
 		KochCurve(int size);
 
-		const std::vector<Line>& lines();
-		void generate(int iters);
+		void generate(int iters) override;
+		const std::vector<Line>* lines() override;
+		const std::vector<Square>* squares() override;
 	protected:
 		double size_ = 100;
 		std::vector<Line> lines_;
+
+		void generate_(int iters);
 	private:
 		std::vector<Line> tmp;
 	};
@@ -20,6 +23,7 @@ namespace fractal {
 	public:
 		KochSnowflake();
 		KochSnowflake(int size);
+		void generate(int iters) override;
 	};
 
 	// Koch curve
@@ -36,12 +40,22 @@ namespace fractal {
 	}
 
 	// Getters & setters
-	const std::vector<Line>& KochCurve::lines() {
-		return this->lines_;
+	const std::vector<Line>* KochCurve::lines() {
+		return &this->lines_;
+	}
+
+	const std::vector<Square>* KochCurve::squares() {
+		return NULL;
 	}
 
 	// Functions
 	void KochCurve::generate(int iters) {
+		lines_ = std::vector<Line>();
+		lines_.push_back(Line(-size_ / 2, 0, 0, size_));
+		this->generate_(iters);
+	}
+
+	void KochCurve::generate_(int iters) {
 		if (iters < 0)
 			throw std::exception("Iteration count must be zero or greater");
 		if (iters == 0)
@@ -60,7 +74,7 @@ namespace fractal {
 			tmp.push_back(line4);
 		}
 		lines_ = tmp;
-		this->generate(iters - 1);
+		this->generate_(iters - 1);
 	}
 
 	// Koch snowflake
@@ -83,5 +97,16 @@ namespace fractal {
 		lines_.push_back(line1);
 		lines_.push_back(line2);
 		lines_.push_back(line3);
+	}
+
+	void KochSnowflake::generate(int iters) {
+		lines_ = std::vector<Line>();
+		Line line1(-size_ / 2, 0, 0, size_),
+			line2(line1.getSecPos(), -PI * 2 / 3, size_),
+			line3(line2.getSecPos(), -PI * 4 / 3, size_);
+		lines_.push_back(line1);
+		lines_.push_back(line2);
+		lines_.push_back(line3);
+		this->generate_(iters);
 	}
 }
