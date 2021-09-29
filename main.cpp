@@ -2,8 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-int main()
-{
+int main() {
     fractal::KochSnowflake kcf(700);
     fractal::KochCurve kcv(700);
     fractal::SierpinskiCarpet srpc(700);
@@ -23,13 +22,13 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Q && scale < 1600) {
                     scale *= 2;
-                    shiftX *= 2;
-                    shiftY *= 2;
+                    shiftX *= horizontalPx * 1. / verticalPx;
+                    shiftY *= horizontalPx * 1. / verticalPx;
                 }
                 if (event.key.code == sf::Keyboard::E && scale > 12.5) {
                     scale /= 2;
-                    shiftX /= 2;
-                    shiftY /= 2;
+                    shiftX /= horizontalPx * 1. / verticalPx;
+                    shiftY /= horizontalPx * 1. / verticalPx;
                 }
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
