@@ -24,6 +24,7 @@ namespace fractal {
         void run();
     private:
         std::vector<IGeometricFractal*> geometricFractals;
+        std::vector<IAlgebraicFractal*> algebraicFractals;
         double shiftX_ = 0, shiftY_ = 0;
         double scale_ = 100.0;
         int iterations_ = 0;
@@ -40,6 +41,8 @@ namespace fractal {
         geometricFractals.push_back(new SierpinskiCarpet(height));
         geometricFractals.push_back(new KochCurve(height));
         geometricFractals.push_back(new KochSnowflake(height));
+
+        algebraicFractals.push_back(new MandelbrotSet());
         for (IGeometricFractal* frac : geometricFractals) {
             frac->generate(0);
         }
@@ -47,10 +50,14 @@ namespace fractal {
         std::vector<Button_> geometricButtons;
         std::vector<Button_> algebraicButtons;
         std::vector<Button_> stochasticButtons;
-        geometricButtons.push_back(Button_("Sierpinski carpet", &active_, &type_, horizontalPx / 6, 180, 300, 100, 0, 0));
-        geometricButtons.push_back(Button_("Koch curve", &active_, &type_, horizontalPx / 6, 300, 300, 80, 0, 1));
-        geometricButtons.push_back(Button_("Koch snowflake", &active_, &type_, horizontalPx / 6, 420, 300, 100, 0, 2));
+        geometricButtons.push_back(Button_("Sierpinski carpet", &active_, &type_, horizontalPx / 6 - 150, 180, 300, 100, 0, 0));
+        geometricButtons.push_back(Button_("Koch curve", &active_, &type_, horizontalPx / 6 - 150, 300, 300, 80, 0, 1));
+        geometricButtons.push_back(Button_("Koch snowflake", &active_, &type_, horizontalPx / 6 - 150, 420, 300, 100, 0, 2));
         buttons_.push_back(geometricButtons);
+
+        algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 180, 300, 100, 1, 0));
+        algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 300, 300, 100, 1, 1));
+        algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 420, 300, 100, 1, 2));
         buttons_.push_back(algebraicButtons);
         buttons_.push_back(stochasticButtons);
     }
@@ -130,25 +137,41 @@ namespace fractal {
                 zeroY = verticalPx / 2 + shiftY_ * scale_ / 100.0;
             const int fieldSize = 200 * scale_ / 100;
             // Geometric fractals display
-            if (geometricFractals.at(type_)->lines() != NULL) {
-                for (Line i : *geometricFractals.at(type_)->lines()) {
-                    sf::VertexArray line(sf::LinesStrip, 2);
-                    line[0].color = sf::Color::White;
-                    line[1].color = sf::Color::White;
-                    line[0].position = sf::Vector2f(zeroX + i.pos.x * scale_ / 100, zeroY + i.pos.y * scale_ / 100);
-                    line[1].position = sf::Vector2f(zeroX + i.getSecPos().x * scale_ / 100, zeroY + i.getSecPos().y * scale_ / 100);
-                    window.draw(line);
+            if (active_ == 0) {
+                if (geometricFractals.at(type_)->lines() != NULL) {
+                    for (Line i : *geometricFractals.at(type_)->lines()) {
+                        sf::VertexArray line(sf::LinesStrip, 2);
+                        line[0].color = sf::Color::White;
+                        line[1].color = sf::Color::White;
+                        line[0].position = sf::Vector2f(zeroX + i.pos.x * scale_ / 100, zeroY + i.pos.y * scale_ / 100);
+                        line[1].position = sf::Vector2f(zeroX + i.getSecPos().x * scale_ / 100, zeroY + i.getSecPos().y * scale_ / 100);
+                        window.draw(line);
+                    }
                 }
-            }
-            if (geometricFractals.at(type_)->squares() != NULL) {
-                for (Square i : *geometricFractals.at(type_)->squares()) {
-                    sf::RectangleShape squareSFML;
-                    squareSFML.setFillColor(sf::Color::White);
-                    squareSFML.setOutlineThickness(0);
-                    squareSFML.setPosition(zeroX + i.center.x * scale_ / 100 - i.diam * scale_ / 200, zeroY + i.center.y * scale_ / 100 - i.diam * scale_ / 200);
-                    squareSFML.setSize(sf::Vector2f(i.diam * scale_ / 100, i.diam * scale_ / 100));
-                    window.draw(squareSFML);
+                if (geometricFractals.at(type_)->squares() != NULL) {
+                    for (Square i : *geometricFractals.at(type_)->squares()) {
+                        sf::RectangleShape squareSFML;
+                        squareSFML.setFillColor(sf::Color::White);
+                        squareSFML.setOutlineThickness(0);
+                        squareSFML.setPosition(zeroX + i.center.x * scale_ / 100 - i.diam * scale_ / 200, zeroY + i.center.y * scale_ / 100 - i.diam * scale_ / 200);
+                        squareSFML.setSize(sf::Vector2f(i.diam * scale_ / 100, i.diam * scale_ / 100));
+                        window.draw(squareSFML);
+                    }
                 }
+            // Algebraic fractals display
+            } else if (active_ == 1) {
+                for (int i = 0; i < horizontalPx; ++i) {
+                    for (int j = 0; j < verticalPx; ++j) {
+                        sf::VertexArray point(sf::LinesStrip, 2);
+                        point[0].position = sf::Vector2f(i, j);
+                        point[1].position = sf::Vector2f(i, j);
+                        sf::Color color = algebraicFractals.at(0)->getPixelColor(cmpx::Complex<double>(i, j));
+                        point[]
+                    }
+                }
+            // Stochactic fractals display
+            } else {
+
             }
 
             // Menu display
