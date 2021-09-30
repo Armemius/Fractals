@@ -65,7 +65,9 @@ namespace fractal {
     void Display::run() {
         sf::RenderWindow window(sf::VideoMode(horizontalPx, verticalPx), "Fractals", sf::Style::Fullscreen);
         window.setVerticalSyncEnabled(doVSync_);
+        sf::Clock clock;
         while (window.isOpen()) {
+            sf::Time elapsed = clock.restart();
             // Mouse click handler
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 sf::Vector2i pos = sf::Mouse::getPosition(window);
@@ -85,28 +87,24 @@ namespace fractal {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close(); 
+                if (event.type == sf::Event::MouseWheelScrolled && !isMenuOpen_)
+                {
+                    if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel) {
+                        if (event.mouseWheelScroll.delta == 1) {
+                            scale_ *= 1.2;
+                        } else if (event.mouseWheelScroll.delta == -1) {
+                            scale_ /= 1.2;
+                        }
+                    }
+                }
                 // Key input handler
                 if (event.type == sf::Event::KeyPressed) {
-                    if (event.key.code == sf::Keyboard::Q && scale_ < 1600) {
-                        scale_ *= 2;
-                        shiftX_ *= horizontalPx * 1. / verticalPx;
-                        shiftY_ *= horizontalPx * 1. / verticalPx;
+                    if (event.key.code == sf::Keyboard::Escape) {
+                        if (!isMenuOpen_)
+                            window.close();
+                        else
+                            isMenuOpen_ = false;
                     }
-                    if (event.key.code == sf::Keyboard::E && scale_ > 12.5) {
-                        scale_ /= 2;
-                        shiftX_ /= horizontalPx * 1. / verticalPx;
-                        shiftY_ /= horizontalPx * 1. / verticalPx;
-                    }
-                    if (event.key.code == sf::Keyboard::Escape)
-                        window.close();
-                    if (event.key.code == sf::Keyboard::A)
-                        shiftX_ += 25 * 100.0 / scale_;
-                    if (event.key.code == sf::Keyboard::D)
-                        shiftX_ -= 25 * 100.0 / scale_;
-                    if (event.key.code == sf::Keyboard::W)
-                        shiftY_ += 25 * 100.0 / scale_;
-                    if (event.key.code == sf::Keyboard::S)
-                        shiftY_ -= 25 * 100.0 / scale_;
                     if (event.key.code == sf::Keyboard::M)
                         isMenuOpen_ = !isMenuOpen_;
                     if (event.key.code == sf::Keyboard::K) {
@@ -209,6 +207,23 @@ namespace fractal {
                         buttonLabel.setCharacterSize(30);
                         window.draw(buttonLabel);
                     }
+                }
+            }
+            // Movement handler
+            if (!isMenuOpen_) {
+                int renderTime = elapsed.asMilliseconds();
+                sf::Vector2i pos = sf::Mouse::getPosition(window);
+                if (pos.x < 100) {
+                    shiftX_ += 100.0 / scale_ * renderTime;
+                }
+                if (pos.x > horizontalPx - 100) {
+                    shiftX_ -= 100.0 / scale_ * renderTime;
+                }
+                if (pos.y < 100) {
+                    shiftY_ += 100.0 / scale_ * renderTime;
+                }
+                if (pos.y > verticalPx - 100) {
+                    shiftY_ -= 100.0 / scale_ * renderTime;
                 }
             }
             window.display();
