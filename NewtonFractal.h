@@ -2,16 +2,16 @@
 #include "stdafx.h"
 
 namespace fractal {
-	class MandelbrotSet : public IAlgebraicFractal {
+	class NewtonFractal : public IAlgebraicFractal {
 	public:
 		sf::Color getPixelColor(cmpx::Complex<double> pos) override;
 	private:
 		int iterate(cmpx::Complex<double>& start) override;
 		const int maxRad = 2;
 	};
-	
+
 	//Functions
-	sf::Color MandelbrotSet::getPixelColor(cmpx::Complex<double> pos) {
+	sf::Color NewtonFractal::getPixelColor(cmpx::Complex<double> pos) {
 		int iters = this->iterate(pos);
 		if (iters == this->maxIter_)
 			return sf::Color::Black;
@@ -24,8 +24,8 @@ namespace fractal {
 			return sf::Color(255, 0, 255 * k);
 		return sf::Color(1000 * k, 0, 1000 * k);
 	}
-	
-	int MandelbrotSet::iterate(cmpx::Complex<double>& start) {
+
+	int NewtonFractal::iterate(cmpx::Complex<double>& start) {
 		cmpx::Complex<double> comp(0, 0);
 
 		double x2 = 0, y2 = 0;
@@ -44,12 +44,6 @@ namespace fractal {
 			if (std::abs(x - xold) < 1e-5 and std::abs(y - yold) < 1e-5) {
 				iter = maxIter_;
 				break;
-			}
-			period = period + 1;
-			if (period > 20) {
-				period = 0;
-				xold = x;
-				yold = y;
 			}
 		}
 

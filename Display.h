@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include <SFML/Graphics.hpp>
 
 namespace fractal {
+
     class Button_ {
     public:
         Button_(std::string name_, int* active_, int* type_, int x_, int y_, int width_, int height_, int butActive_, int butType_);
@@ -23,15 +23,19 @@ namespace fractal {
         ~Display();
         void run();
     private:
+        cmpx::Complex<double> pxToComplex(int x, int y);
         std::vector<IGeometricFractal*> geometricFractals;
         std::vector<IAlgebraicFractal*> algebraicFractals;
         double shiftX_ = 0, shiftY_ = 0;
         double scale_ = 100.0;
         int iterations_ = 0;
         int active_ = 0, type_ = 0;
+        double zeroX_ = horizontalPx / 2 + shiftX_ * scale_ / 100.0;
+        double zeroY_ = verticalPx / 2 + shiftY_ * scale_ / 100.0;
         bool isMenuOpen_ = true, doVSync_ = true;
         const int horizontalPx = sf::VideoMode::getDesktopMode().width;
         const int verticalPx = sf::VideoMode::getDesktopMode().height;
+        int frame_ = 0;
         sf::Font font_;
         std::vector<std::vector<Button_>> buttons_;
     };
@@ -55,7 +59,7 @@ namespace fractal {
         geometricButtons.push_back(Button_("Koch snowflake", &active_, &type_, horizontalPx / 6 - 150, 420, 300, 100, 0, 2));
         buttons_.push_back(geometricButtons);
 
-        algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 180, 300, 100, 1, 0));
+        algebraicButtons.push_back(Button_("Mandelbrot set", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 180, 300, 100, 1, 0));
         algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 300, 300, 100, 1, 1));
         algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 420, 300, 100, 1, 2));
         buttons_.push_back(algebraicButtons);
@@ -72,8 +76,12 @@ namespace fractal {
     void Display::run() {
         sf::RenderWindow window(sf::VideoMode(horizontalPx, verticalPx), "Fractals", sf::Style::Fullscreen);
         window.setVerticalSyncEnabled(doVSync_);
-        sf::Clock clock;
+        sf::Clock clock, algebraic;
+        sf::Uint8* pixels = new sf::Uint8[horizontalPx * verticalPx * 4];
         while (window.isOpen()) {
+            if (frame_ == 100)
+                frame_ = 0;
+            frame_++;
             sf::Time elapsed = clock.restart();
             // Mouse click handler
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -94,8 +102,7 @@ namespace fractal {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close(); 
-                if (event.type == sf::Event::MouseWheelScrolled && !isMenuOpen_)
-                {
+                if (event.type == sf::Event::MouseWheelScrolled && !isMenuOpen_) {
                     if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel) {
                         if (event.mouseWheelScroll.delta == 1) {
                             scale_ *= 1.2;
@@ -133,8 +140,8 @@ namespace fractal {
             }
             window.clear(sf::Color(15, 15, 15));
             // Zero/zero point relative to window
-            double zeroX = horizontalPx / 2 + shiftX_ * scale_ / 100.0,
-                zeroY = verticalPx / 2 + shiftY_ * scale_ / 100.0;
+            zeroX_ = horizontalPx / 2 + shiftX_ * scale_ / 100.0;
+            zeroY_ = verticalPx / 2 + shiftY_ * scale_ / 100.0;
             const int fieldSize = 200 * scale_ / 100;
             // Geometric fractals display
             if (active_ == 0) {
@@ -143,8 +150,8 @@ namespace fractal {
                         sf::VertexArray line(sf::LinesStrip, 2);
                         line[0].color = sf::Color::White;
                         line[1].color = sf::Color::White;
-                        line[0].position = sf::Vector2f(zeroX + i.pos.x * scale_ / 100, zeroY + i.pos.y * scale_ / 100);
-                        line[1].position = sf::Vector2f(zeroX + i.getSecPos().x * scale_ / 100, zeroY + i.getSecPos().y * scale_ / 100);
+                        line[0].position = sf::Vector2f(zeroX_ + i.pos.x * scale_ / 100, zeroY_ + i.pos.y * scale_ / 100);
+                        line[1].position = sf::Vector2f(zeroX_ + i.getSecPos().x * scale_ / 100, zeroY_ + i.getSecPos().y * scale_ / 100);
                         window.draw(line);
                     }
                 }
@@ -153,22 +160,38 @@ namespace fractal {
                         sf::RectangleShape squareSFML;
                         squareSFML.setFillColor(sf::Color::White);
                         squareSFML.setOutlineThickness(0);
-                        squareSFML.setPosition(zeroX + i.center.x * scale_ / 100 - i.diam * scale_ / 200, zeroY + i.center.y * scale_ / 100 - i.diam * scale_ / 200);
+                        squareSFML.setPosition(zeroX_ + i.center.x * scale_ / 100 - i.diam * scale_ / 200, zeroY_ + i.center.y * scale_ / 100 - i.diam * scale_ / 200);
                         squareSFML.setSize(sf::Vector2f(i.diam * scale_ / 100, i.diam * scale_ / 100));
                         window.draw(squareSFML);
                     }
                 }
             // Algebraic fractals display
             } else if (active_ == 1) {
-                for (int i = 0; i < horizontalPx; ++i) {
-                    for (int j = 0; j < verticalPx; ++j) {
-                        sf::VertexArray point(sf::LinesStrip, 2);
-                        point[0].position = sf::Vector2f(i, j);
-                        point[1].position = sf::Vector2f(i, j);
-                        sf::Color color = algebraicFractals.at(0)->getPixelColor(cmpx::Complex<double>(i, j));
-                        point[]
+                sf::Texture texture;
+                texture.create(horizontalPx, verticalPx);
+                sf::Sprite sprite(texture);
+                if (frame_ % 2 == 0) {
+                    for (int i = 0; i < horizontalPx; ++i) {
+                        std::uniform_int_distribution<int> rand(0, 10);
+                        std::random_device rand_dev;
+                        std::mt19937 rand_engine(rand_dev());
+                        if (xorshf96() % 10 > 5.0 / algebraic.getElapsedTime().asMilliseconds()) {
+                            continue;
+                        }
+                        for (int j = 0; j < verticalPx; ++j) {
+                            
+                            sf::Color color = algebraicFractals.at(0)->getPixelColor(pxToComplex(i, j));
+                            pixels[(j * horizontalPx + i) * 4] = color.r;
+                            pixels[(j * horizontalPx + i) * 4 + 1] = color.g;
+                            pixels[(j * horizontalPx + i) * 4 + 2] = color.b;
+                            pixels[(j * horizontalPx + i) * 4 + 3] = 255;
+
+                        }
                     }
                 }
+                texture.update(pixels);
+                window.draw(sprite);
+                algebraic.restart();
             // Stochactic fractals display
             } else {
 
@@ -251,8 +274,14 @@ namespace fractal {
             }
             window.display();
         }
+        delete[] pixels;
     }
     
+    cmpx::Complex<double> Display::pxToComplex(int x, int y) {
+        double fieldSize = 1000 * scale_ / 100;
+        return cmpx::Complex<double>((x - zeroX_) / fieldSize, (y - zeroY_) / fieldSize);
+    }
+
     // Button
     Button_::Button_(std::string name_, int* active_, int* type_, int x_, int y_, int width_, int height_, int butActive_, int butType_) :
         name(name_),

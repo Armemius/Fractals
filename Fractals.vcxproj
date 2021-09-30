@@ -156,10 +156,13 @@
   <ItemGroup>
     <ClInclude Include="Complex.h" />
     <ClInclude Include="Display.h" />
+    <ClInclude Include="Fractals\algebraic\IAlebraicFractal.h" />
     <ClInclude Include="Fractals\Figures.h" />
     <ClInclude Include="Fractals\geometric\IGeometricFractal.h" />
     <ClInclude Include="Fractals\geometric\KochFractals.h" />
     <ClInclude Include="Fractals\geometric\SierpinskiCarpet.h" />
+    <ClInclude Include="MandelbrotSet.h" />
+    <ClInclude Include="NewtonFractal.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
