@@ -23,7 +23,7 @@ namespace fractal {
         ~Display();
         void run();
     private:
-        cmpx::Complex<double> pxToComplex(int x, int y);
+        cmpx::Complex<long double> pxToComplex(int x, int y);
         std::vector<IGeometricFractal*> geometricFractals;
         std::vector<IAlgebraicFractal*> algebraicFractals;
         double shiftX_ = 0, shiftY_ = 0;
@@ -47,6 +47,7 @@ namespace fractal {
         geometricFractals.push_back(new KochSnowflake(height));
 
         algebraicFractals.push_back(new MandelbrotSet());
+        algebraicFractals.push_back(new NovaFractal());
         for (IGeometricFractal* frac : geometricFractals) {
             frac->generate(0);
         }
@@ -60,7 +61,7 @@ namespace fractal {
         buttons_.push_back(geometricButtons);
 
         algebraicButtons.push_back(Button_("Mandelbrot set", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 180, 300, 100, 1, 0));
-        algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 300, 300, 100, 1, 1));
+        algebraicButtons.push_back(Button_("Nova fractal", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 300, 300, 100, 1, 1));
         algebraicButtons.push_back(Button_("Gavno mo4a", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 420, 300, 100, 1, 2));
         buttons_.push_back(algebraicButtons);
         buttons_.push_back(stochasticButtons);
@@ -170,7 +171,7 @@ namespace fractal {
                 sf::Texture texture;
                 texture.create(horizontalPx, verticalPx);
                 sf::Sprite sprite(texture);
-                if (frame_ % 2 == 0) {
+                if (frame_ % 3 == 0) {
                     for (int i = 0; i < horizontalPx; ++i) {
                         std::uniform_int_distribution<int> rand(0, 10);
                         std::random_device rand_dev;
@@ -180,7 +181,7 @@ namespace fractal {
                         }
                         for (int j = 0; j < verticalPx; ++j) {
                             
-                            sf::Color color = algebraicFractals.at(0)->getPixelColor(pxToComplex(i, j));
+                            sf::Color color = algebraicFractals.at(type_)->getPixelColor(pxToComplex(i, j));
                             pixels[(j * horizontalPx + i) * 4] = color.r;
                             pixels[(j * horizontalPx + i) * 4 + 1] = color.g;
                             pixels[(j * horizontalPx + i) * 4 + 2] = color.b;
@@ -277,9 +278,9 @@ namespace fractal {
         delete[] pixels;
     }
     
-    cmpx::Complex<double> Display::pxToComplex(int x, int y) {
+    cmpx::Complex<long double> Display::pxToComplex(int x, int y) {
         double fieldSize = 1000 * scale_ / 100;
-        return cmpx::Complex<double>((x - zeroX_) / fieldSize, (y - zeroY_) / fieldSize);
+        return cmpx::Complex<long double>((x - zeroX_) / fieldSize, (y - zeroY_) / fieldSize);
     }
 
     // Button

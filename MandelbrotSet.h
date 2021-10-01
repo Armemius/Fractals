@@ -4,14 +4,14 @@
 namespace fractal {
 	class MandelbrotSet : public IAlgebraicFractal {
 	public:
-		sf::Color getPixelColor(cmpx::Complex<double> pos) override;
+		sf::Color getPixelColor(cmpx::Complex<long double> pos) override;
 	private:
-		int iterate(cmpx::Complex<double>& start) override;
+		int iterate(cmpx::Complex<long double>& start) override;
 		const int maxRad = 2;
 	};
 	
 	//Functions
-	sf::Color MandelbrotSet::getPixelColor(cmpx::Complex<double> pos) {
+	sf::Color MandelbrotSet::getPixelColor(cmpx::Complex<long double> pos) {
 		int iters = this->iterate(pos);
 		if (iters == this->maxIter_)
 			return sf::Color::Black;
@@ -25,32 +25,23 @@ namespace fractal {
 		return sf::Color(1000 * k, 0, 1000 * k);
 	}
 	
-	int MandelbrotSet::iterate(cmpx::Complex<double>& start) {
-		cmpx::Complex<double> comp(0, 0);
+	int MandelbrotSet::iterate(cmpx::Complex<long double>& start) {
+		cmpx::Complex<long double> complex(0, 0);
 
-		double x2 = 0, y2 = 0;
-		double x = comp.nat(), y = comp.cpx();
+		cmpx::Complex<long double> recurent(0, 0);
+		double x = 0, y = 0;
 		double x0 = start.nat(), y0 = start.cpx();
-		double xold = 0, yold = 0, period = 0;
+		cmpx::Complex<long double> old;
 
 		int iter = 0;
-		while (x2 + y2 <= 4 && iter < maxIter_) {
-			y = (x + x) * y + y0;
-			x = x2 - y2 + x0;
-			x2 = x * x;
-			y2 = y * y;
+		while (abs(complex) <= 4 && iter < maxIter_) {
+			complex = (complex * complex) + start;
+			
+			if (abs(complex - old) < 1e-7) {
+				return maxIter_;
+			}
 			iter++;
-
-			if (std::abs(x - xold) < 1e-5 and std::abs(y - yold) < 1e-5) {
-				iter = maxIter_;
-				break;
-			}
-			period = period + 1;
-			if (period > 20) {
-				period = 0;
-				xold = x;
-				yold = y;
-			}
+			old = complex;
 		}
 
 		return iter;

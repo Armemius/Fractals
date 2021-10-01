@@ -36,5 +36,6 @@ unsigned long xorshf96() {
 
 #include "fractals/algebraic/IAlebraicFractal.h"
 #include "MandelbrotSet.h"
+#include "NovaFractal.h"
 
 #include "Display.h"
