@@ -164,6 +164,8 @@
     <ClInclude Include="MandelbrotSet.h" />
     <ClInclude Include="JuliaSet.h" />
     <ClInclude Include="FlamingShip.h" />
+    <ClInclude Include="NoiseGenerator.h" />
+    <ClInclude Include="Plasma.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

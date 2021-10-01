@@ -29,6 +29,7 @@ unsigned long xorshf96() {
 
 #include "Complex.h"
 #include "fractals/Figures.h"
+#include "NoiseGenerator.h"
 
 #include "fractals/geometric/IGeometricFractal.h"
 #include "fractals/geometric/KochFractals.h"

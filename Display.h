@@ -35,7 +35,7 @@ namespace fractal {
         bool isMenuOpen_ = true, doVSync_ = true;
         const int horizontalPx = sf::VideoMode::getDesktopMode().width;
         const int verticalPx = sf::VideoMode::getDesktopMode().height;
-        bool optimizeGrid_ = true;
+        bool optimizeGrid_ = false;
         int frame_ = 0;
         sf::Font font_;
         std::vector<std::vector<Button_>> buttons_;
@@ -66,6 +66,8 @@ namespace fractal {
         algebraicButtons.push_back(Button_("Julia set", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 300, 300, 100, 1, 1));
         algebraicButtons.push_back(Button_("Flaming Ship", &active_, &type_, horizontalPx / 6 + horizontalPx / 3 - 150, 420, 300, 100, 1, 2));
         buttons_.push_back(algebraicButtons);
+
+        stochasticButtons.push_back(Button_("Plasma", &active_, &type_, horizontalPx / 6 + horizontalPx * 2 / 3 - 150, 180, 300, 100, 2, 0));
         buttons_.push_back(stochasticButtons);
     }
 
@@ -81,6 +83,11 @@ namespace fractal {
         window.setVerticalSyncEnabled(doVSync_);
         sf::Clock clock, algebraic;
         sf::Uint8* pixels = new sf::Uint8[horizontalPx * verticalPx * 4];
+
+        auto matrixr = NoiseGenerator::generate(horizontalPx, verticalPx);
+        auto matrixg = NoiseGenerator::generate(horizontalPx, verticalPx);
+        auto matrixb = NoiseGenerator::generate(horizontalPx, verticalPx);
+
         while (window.isOpen()) {
             if (frame_ == 100)
                 frame_ = 0;
@@ -200,7 +207,29 @@ namespace fractal {
                 algebraic.restart();
             // Stochactic fractals display
             } else {
+                sf::Texture texture;
+                texture.create(horizontalPx, verticalPx);
+                sf::Sprite sprite(texture);
+                
+                for (int i = 0; i < horizontalPx; ++i) {
+                    std::uniform_int_distribution<int> rand(0, 10);
+                    std::random_device rand_dev;
+                    std::mt19937 rand_engine(rand_dev());
+                    if (xorshf96() % 10 > 5.0) {
+                        continue;
+                    }
+                    for (int j = 0; j < verticalPx; ++j) {
+                        pixels[(j * horizontalPx + i) * 4] = matrixr[i][j];
+                        pixels[(j * horizontalPx + i) * 4 + 1] = matrixg[i][j];
+                        pixels[(j * horizontalPx + i) * 4 + 2] = matrixb[i][j];
+                        pixels[(j * horizontalPx + i) * 4 + 3] = 255;
 
+                    }
+                }
+
+                texture.update(pixels);
+                sprite.setPosition(-1, -1);
+                window.draw(sprite);
             }
 
             // Menu display
