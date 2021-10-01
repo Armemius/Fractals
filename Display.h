@@ -94,7 +94,7 @@ namespace fractal {
             frame_++;
             sf::Time elapsed = clock.restart();
             // Mouse click handler
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && isMenuOpen_) {
                 sf::Vector2i pos = sf::Mouse::getPosition(window);
                 for (int i = 0; i < buttons_.size(); ++i) {
                     for (int j = 0; j < buttons_.at(i).size(); ++j) {
