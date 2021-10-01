@@ -7,7 +7,7 @@ namespace fractal {
 		sf::Color getPixelColor(cmpx::Complex<long double> pos) override;
 	private:
 		int iterate(cmpx::Complex<long double>& start) override;
-		const int maxRad = 2;
+		const int maxIter_ = 200;
 	};
 	
 	//Functions

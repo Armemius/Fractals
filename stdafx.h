@@ -35,7 +35,8 @@ unsigned long xorshf96() {
 #include "fractals/geometric/SierpinskiCarpet.h"
 
 #include "fractals/algebraic/IAlebraicFractal.h"
-#include "MandelbrotSet.h"
-#include "NovaFractal.h"
+#include "fractals/algebraic/FlamingShip.h"
+#include "fractals/algebraic/JuliaSet.h"
+#include "fractals/algebraic/MandelbrotSet.h"
 
 #include "Display.h"
