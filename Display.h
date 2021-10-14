@@ -83,8 +83,9 @@ namespace fractal {
         window.setVerticalSyncEnabled(doVSync_);
         sf::Clock clock, algebraic;
         sf::Uint8* pixels = new sf::Uint8[horizontalPx * verticalPx * 4];
+        sf::Uint8* pixelsStoch = new sf::Uint8[horizontalPx * horizontalPx * 4];
 
-        auto matrix = NoiseGenerator::generate(horizontalPx, verticalPx);
+        auto matrix = NoiseGenerator::generate(horizontalPx, horizontalPx);
 
         while (window.isOpen()) {
             if (frame_ == 100)
@@ -210,7 +211,7 @@ namespace fractal {
             // Stochactic fractals display
             } else {
                 sf::Texture texture;
-                texture.create(horizontalPx, verticalPx);
+                texture.create(horizontalPx, horizontalPx);
                 sf::Sprite sprite(texture);
                 
                 for (int i = 0; i < horizontalPx; ++i) {
@@ -221,15 +222,15 @@ namespace fractal {
                         continue;
                     }
                     for (int j = 0; j < verticalPx; ++j) {
-                        pixels[(j * horizontalPx + i) * 4] = matrix[j][i].r;
-                        pixels[(j * horizontalPx + i) * 4 + 1] = matrix[j][i].g;
-                        pixels[(j * horizontalPx + i) * 4 + 2] = matrix[j][i].b;
-                        pixels[(j * horizontalPx + i) * 4 + 3] = 255;
+                        pixelsStoch[(j * horizontalPx + i) * 4] = matrix[j][i].r;
+                        pixelsStoch[(j * horizontalPx + i) * 4 + 1] = matrix[j][i].g;
+                        pixelsStoch[(j * horizontalPx + i) * 4 + 2] = matrix[j][i].b;
+                        pixelsStoch[(j * horizontalPx + i) * 4 + 3] = 255;
 
                     }
                 }
 
-                texture.update(pixels);
+                texture.update(pixelsStoch);
                 sprite.setPosition(-1, -1);
                 window.draw(sprite);
             }

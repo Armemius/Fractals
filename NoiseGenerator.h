@@ -8,11 +8,8 @@ int fix(int n) {
 	return n;
 }
 void addRandColor(sf::Color& c, int t) {
-	//t = sqrt(t);
-	t /= 20;
+	t /= 15;
 	t *= t;
-	//t /= 300;
-	//if (t > 250) t = 250;
 	c = sf::Color(fix(xorshf96() % t - t / 2 + c.r), fix(xorshf96() % t - t / 2 + c.g), fix(xorshf96() % t - t / 2 + c.b));
 }
 
@@ -80,7 +77,6 @@ namespace fractal {
 	sf::Color NoiseGenerator::avgColor(const sf::Color& fst, const sf::Color& sec) {
 		return sf::Color(((int)fst.r + sec.r) / 2, ((int)fst.g + sec.g) / 2, ((int)fst.b + sec.b) / 2);
 	}
-
 
 	sf::Color NoiseGenerator::randColor(int t) {
 		t *= t/2;
