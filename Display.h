@@ -35,7 +35,7 @@ namespace fractal {
         bool isMenuOpen_ = true, doVSync_ = true;
         const int horizontalPx = sf::VideoMode::getDesktopMode().width;
         const int verticalPx = sf::VideoMode::getDesktopMode().height;
-        bool optimizeGrid_ = false;
+        bool optimizeGrid_ = true;
         int frame_ = 0;
         sf::Font font_;
         std::vector<std::vector<Button_>> buttons_;
@@ -84,9 +84,7 @@ namespace fractal {
         sf::Clock clock, algebraic;
         sf::Uint8* pixels = new sf::Uint8[horizontalPx * verticalPx * 4];
 
-        auto matrixr = NoiseGenerator::generate(horizontalPx, verticalPx);
-        auto matrixg = NoiseGenerator::generate(horizontalPx, verticalPx);
-        auto matrixb = NoiseGenerator::generate(horizontalPx, verticalPx);
+        auto matrix = NoiseGenerator::generate(horizontalPx, verticalPx);
 
         while (window.isOpen()) {
             if (frame_ == 100)
@@ -219,9 +217,9 @@ namespace fractal {
                         continue;
                     }
                     for (int j = 0; j < verticalPx; ++j) {
-                        pixels[(j * horizontalPx + i) * 4] = matrixr[i][j];
-                        pixels[(j * horizontalPx + i) * 4 + 1] = matrixg[i][j];
-                        pixels[(j * horizontalPx + i) * 4 + 2] = matrixb[i][j];
+                        pixels[(j * horizontalPx + i) * 4] = matrix[j][i].r;
+                        pixels[(j * horizontalPx + i) * 4 + 1] = matrix[j][i].g;
+                        pixels[(j * horizontalPx + i) * 4 + 2] = matrix[j][i].b;
                         pixels[(j * horizontalPx + i) * 4 + 3] = 255;
 
                     }
