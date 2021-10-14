@@ -139,13 +139,17 @@ namespace fractal {
                             ++iterations_;
                         geometricFractals.at(type_)->generate(iterations_);
                     }
+
                     if (event.key.code == sf::Keyboard::Space) {
                         scale_ = 100.0;
                         shiftX_ = 0;
                         shiftY_ = 0;
+                        matrix = NoiseGenerator::generate(horizontalPx, verticalPx);
+                        //if (this->type_ == 2)
                     }
                 }
             }
+
             window.clear(sf::Color(15, 15, 15));
             // Zero/zero point relative to window
             zeroX_ = horizontalPx / 2 + shiftX_ * scale_ / 100.0;

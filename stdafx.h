@@ -12,7 +12,7 @@
 
 const double PI = 3.1415926535;
 
-unsigned long xorshf96() {
+int64_t xorshf96() {
     static unsigned long xx = 123456789, yy = 362436069, zz = 521288629;
     unsigned long t;
     xx ^= xx << 16;

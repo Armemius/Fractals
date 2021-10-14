@@ -2,8 +2,18 @@
 #include "stdafx.h"
 #define BLACK sf::Color::Black
 
+int fix(int n) {
+	if (n < 0) return 0;
+	if (n >= 255) return 255;
+	return n;
+}
 void addRandColor(sf::Color& c, int t) {
-	c = sf::Color(xorshf96() % t - t / 2 + c.r, xorshf96() % t - t / 2 + c.r, xorshf96() % t - t / 2 + c.r);
+	//t = sqrt(t);
+	t /= 20;
+	t *= t;
+	//t /= 300;
+	//if (t > 250) t = 250;
+	c = sf::Color(fix(xorshf96() % t - t / 2 + c.r), fix(xorshf96() % t - t / 2 + c.g), fix(xorshf96() % t - t / 2 + c.b));
 }
 
 namespace fractal {
