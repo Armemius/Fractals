@@ -2,20 +2,9 @@
 #include "stdafx.h"
 #define BLACK sf::Color::Black
 
-int fix(int n) {
-	if (n < 0) return 0;
-	if (n >= 255) return 255;
-	return n;
-}
-void addRandColor(sf::Color& c, int t) {
-	t /= 15;
-	t *= t;
-	c = sf::Color(fix(xorshf96() % t - t / 2 + c.r), fix(xorshf96() % t - t / 2 + c.g), fix(xorshf96() % t - t / 2 + c.b));
-}
-
 namespace fractal {
 
-	class NoiseGenerator {
+	class SmoothNoiseGenerator {
 	public:
 		static std::vector<std::vector<sf::Color>> generate(int width, int height);
 	private:
@@ -24,8 +13,8 @@ namespace fractal {
 		static sf::Color randColor(int t = 255);
 	};
 
-	std::vector<std::vector<sf::Color>> NoiseGenerator::generate(int width, int height) {
-		std::uniform_int_distribution<int> unifx(0, 30);
+	std::vector<std::vector<sf::Color>> SmoothNoiseGenerator::generate(int width, int height) {
+		std::uniform_int_distribution<int> unifx(0, 666);
 		std::random_device rand_dev;
 		std::mt19937 rand_engine(rand_dev());
 		for (int i = 0; i < unifx(rand_engine); ++i) {
@@ -36,7 +25,7 @@ namespace fractal {
 		return matrix;
 	}
 
-	void NoiseGenerator::generateSquare(int x0, int y0, int x1, int y1, std::vector<std::vector<sf::Color>>& matrix) {
+	void SmoothNoiseGenerator::generateSquare(int x0, int y0, int x1, int y1, std::vector<std::vector<sf::Color>>& matrix) {
 		if (x1 - x0 < 2 && y1 - y0 < 2)
 			return;
 		if (matrix[x0][y0] == BLACK) {
@@ -64,7 +53,7 @@ namespace fractal {
 			matrix[x1][(y0 + y1) / 2] = avgColor(matrix[x1][y0], matrix[x1][y1]);
 		}
 		if (matrix[(x0 + x1) / 2][(y0 + y1) / 2] == BLACK) {
-			addRandColor(matrix[(x0 + x1) / 2][(y0 + y1) / 2] = avgColor(avgColor(matrix[x0][y0], matrix[x0][y1]), avgColor(matrix[x1][y0], matrix[x1][y1])), 100);
+			matrix[(x0 + x1) / 2][(y0 + y1) / 2] = avgColor(avgColor(matrix[x0][y0], matrix[x0][y1]), avgColor(matrix[x1][y0], matrix[x1][y1]));
 		}
 		generateSquare((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, matrix);
 		generateSquare(x0, (y0 + y1) / 2, (x0 + x1) / 2, y1, matrix);
@@ -72,12 +61,12 @@ namespace fractal {
 		generateSquare(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2, matrix);
 	}
 
-	sf::Color NoiseGenerator::avgColor(const sf::Color& fst, const sf::Color& sec) {
+	sf::Color SmoothNoiseGenerator::avgColor(const sf::Color& fst, const sf::Color& sec) {
 		return sf::Color(((int)fst.r + sec.r) / 2, ((int)fst.g + sec.g) / 2, ((int)fst.b + sec.b) / 2);
 	}
 
-	sf::Color NoiseGenerator::randColor(int t) {
-		t *= t/2;
+	sf::Color SmoothNoiseGenerator::randColor(int t) {
+		t *= t / 2;
 		int offset = (255 - t) / 2;
 		return sf::Color(xorshf96() % t + offset, xorshf96() % t + offset, xorshf96() % t + offset);
 	}

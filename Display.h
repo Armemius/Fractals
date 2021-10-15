@@ -35,7 +35,7 @@ namespace fractal {
         bool isMenuOpen_ = true, doVSync_ = true;
         const int horizontalPx = sf::VideoMode::getDesktopMode().width;
         const int verticalPx = sf::VideoMode::getDesktopMode().height;
-        bool optimizeGrid_ = true;
+        bool optimizeGrid_ = 1;
         int frame_ = 0;
         sf::Font font_;
         std::vector<std::vector<Button_>> buttons_;
@@ -68,6 +68,7 @@ namespace fractal {
         buttons_.push_back(algebraicButtons);
 
         stochasticButtons.push_back(Button_("Plasma", &active_, &type_, horizontalPx / 6 + horizontalPx * 2 / 3 - 150, 180, 300, 100, 2, 0));
+        stochasticButtons.push_back(Button_("Gradient", &active_, &type_, horizontalPx / 6 + horizontalPx * 2 / 3 - 150, 300, 300, 100, 2, 1));
         buttons_.push_back(stochasticButtons);
     }
 
@@ -85,7 +86,8 @@ namespace fractal {
         sf::Uint8* pixels = new sf::Uint8[horizontalPx * verticalPx * 4];
         sf::Uint8* pixelsStoch = new sf::Uint8[horizontalPx * horizontalPx * 4];
 
-        auto matrix = NoiseGenerator::generate(horizontalPx, horizontalPx);
+        auto matrix0 = NoiseGenerator::generate(horizontalPx, horizontalPx);
+        auto matrix1 = SmoothNoiseGenerator::generate(horizontalPx, horizontalPx);
 
         while (window.isOpen()) {
             if (frame_ == 100)
@@ -128,7 +130,7 @@ namespace fractal {
                         else
                             isMenuOpen_ = false;
                     }
-                    if (event.key.code == sf::Keyboard::M)
+                    if (event.key.code == sf::Keyboard::Tab)
                         isMenuOpen_ = !isMenuOpen_;
                     if (event.key.code == sf::Keyboard::K) {
                         if (iterations_ > 0)
@@ -145,7 +147,12 @@ namespace fractal {
                         scale_ = 100.0;
                         shiftX_ = 0;
                         shiftY_ = 0;
-                        matrix = NoiseGenerator::generate(horizontalPx, verticalPx);
+                        if (active_ == 2) {
+                            if (type_ == 0)
+                                matrix0 = NoiseGenerator::generate(horizontalPx, verticalPx);
+                            if (type_ == 1)
+                                matrix1 = SmoothNoiseGenerator::generate(horizontalPx, verticalPx);
+                        }
                         //if (this->type_ == 2)
                     }
                 }
@@ -221,12 +228,20 @@ namespace fractal {
                     if (xorshf96() % 10 > 5.0) {
                         continue;
                     }
-                    for (int j = 0; j < verticalPx; ++j) {
-                        pixelsStoch[(j * horizontalPx + i) * 4] = matrix[j][i].r;
-                        pixelsStoch[(j * horizontalPx + i) * 4 + 1] = matrix[j][i].g;
-                        pixelsStoch[(j * horizontalPx + i) * 4 + 2] = matrix[j][i].b;
-                        pixelsStoch[(j * horizontalPx + i) * 4 + 3] = 255;
-
+                    if (type_ == 0) {
+                        for (int j = 0; j < verticalPx; ++j) {
+                            pixelsStoch[(j * horizontalPx + i) * 4] = matrix0[j][i].r;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 1] = matrix0[j][i].g;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 2] = matrix0[j][i].b;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 3] = 255;
+                        }
+                    } else if (type_ == 1) {
+                        for (int j = 0; j < verticalPx; ++j) {
+                            pixelsStoch[(j * horizontalPx + i) * 4] = matrix1[j][i].r;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 1] = matrix1[j][i].g;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 2] = matrix1[j][i].b;
+                            pixelsStoch[(j * horizontalPx + i) * 4 + 3] = 255;
+                        }
                     }
                 }
 

@@ -30,6 +30,7 @@ int64_t xorshf96() {
 #include "Complex.h"
 #include "fractals/Figures.h"
 #include "NoiseGenerator.h"
+#include "SmoothNoiseGenerator.h"
 
 #include "fractals/geometric/IGeometricFractal.h"
 #include "fractals/geometric/KochFractals.h"
